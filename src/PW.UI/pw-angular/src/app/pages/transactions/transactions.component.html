@@ -1,0 +1,58 @@
+<h2 class="content-block">Transactions list</h2>
+<div class="dx-card content-block responsive-paddings">
+  <dx-data-grid #userGrid
+                id="transferGrid"
+                [dataSource]="dataStore"
+                [showBorders]="true"
+                [showColumnLines]="true"
+                [allowColumnResizing]="true"
+                [allowColumnReordering]="true"
+                [focusedRowIndex]="0"
+                [focusedRowEnabled]="true"
+                (onInitNewRow)="onInitNewRow($event)"
+                (onToolbarPreparing)="onToolbarPreparing($event)"
+                (onFocusedRowChanged)="onFocusedRowChanged($event)"
+                (onRowInserted)="onRowInserted($event)"
+  >
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
+    <dxo-column-chooser mode="select"></dxo-column-chooser>
+    <dxo-paging [pageSize]="5"></dxo-paging>
+    <dxo-filter-row visible="true" applyFilter="Immediately"></dxo-filter-row>
+    <dxo-editing
+      mode="popup"
+      refreshMode="full"
+      [allowAdding]="false"
+      [allowUpdating]="false"
+      [allowDeleting]="false"
+    >
+      <dxo-popup
+        [fullScreen]="false"
+        title="Transfer money"
+        [showTitle]="true"
+        width="600"
+        height="400"
+      >
+      </dxo-popup>
+      <dxo-form [colCount]="1" [labelLocation]="'left'">
+
+        <dxi-item dataField="corresponded" caption="Recipient">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="amount" caption="Sum" itemType="number">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="descriptions" caption="Description"></dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxi-column dataField="corresponded" caption="Recipient" [visible]="false" [showInColumnChooser]="false">
+      <dxo-lookup [dataSource]="userLookUpStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+    </dxi-column>
+    <dxi-column dataField="dateTransfer" caption="Date" dataType="datetime" sortOrder="desc"></dxi-column>
+    <dxi-column dataField="correspondedName" caption="User"></dxi-column>
+    <dxi-column dataField="amount" caption="Sum"></dxi-column>
+    <dxi-column dataField="balance" caption="Balance"></dxi-column>
+    <dxi-column dataField="descriptions" caption="Description" [allowFiltering]="false"></dxi-column>
+  </dx-data-grid>
+</div>

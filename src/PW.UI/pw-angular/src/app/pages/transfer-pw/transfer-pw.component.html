@@ -1,0 +1,59 @@
+<h2 class="content-block">Список выполненых транзакций</h2>
+<div class="dx-card content-block responsive-paddings">
+  <dx-data-grid #userGrid
+                id="transferGrid"
+                [dataSource]="dataStore"
+                [showBorders]="true"
+                [showColumnLines]="true"
+                [allowColumnResizing]="true"
+                [allowColumnReordering]="true"
+                [focusedRowIndex]="0"
+                [focusedRowEnabled]="true"
+                (onInitNewRow)="onInitNewRow($event)"
+                (onToolbarPreparing)="onToolbarPreparing($event)"
+                (onFocusedRowChanged)="onFocusedRowChanged($event)"
+                (onRowInserted)="onRowInserted($event)"
+  >
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
+    <dxo-column-chooser mode="select"></dxo-column-chooser>
+    <dxo-paging [pageSize]="5"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      refreshMode="full"
+      [allowAdding]="false"
+      [allowUpdating]="false"
+      [allowDeleting]="false"
+    >
+      <dxo-popup
+        [fullScreen]="false"
+        title="Transfer money"
+        [showTitle]="true"
+        width="600"
+        height="400"
+      >
+      </dxo-popup>
+      <dxo-form [colCount]="1" [labelLocation]="'left'">
+
+        <dxi-item dataField="recipient" caption="Recipient">
+          <dxo-lookup [dataSource]="userLookUpStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="amount" caption="Sum" itemType="number">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="description" caption="Description"></dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxi-column dataField="dateTransfer" caption="Date" dataType="date"></dxi-column>
+    <dxi-column dataField="sender" caption="Sender">
+      <dxo-lookup [dataSource]="userStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+    </dxi-column>
+    <dxi-column dataField="recipient" caption="Recipient">
+      <dxo-lookup [dataSource]="userStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+    </dxi-column>
+    <dxi-column dataField="amount" caption="Sum"></dxi-column>
+    <dxi-column dataField="description" caption="Description" [visible]="false"></dxi-column>
+  </dx-data-grid>
+</div>
