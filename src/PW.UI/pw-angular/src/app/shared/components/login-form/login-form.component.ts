@@ -44,7 +44,14 @@ export class LoginFormComponent implements OnInit {
     this.login = localStorage.getItem(environment.loginStorageKey) || '';
   }
 
+  onPasswordSubmit(e) {
+    if (e.event.code === 'Enter') {
+      this.onLoginClick(e);
+    }
+  }
+
   onLoginClick(args) {
+    console.log(args);
     if (!args.validationGroup.validate().isValid) {
       return;
     }

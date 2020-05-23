@@ -23,10 +23,8 @@ export const getDocuments = createSelector(
 );
 
 export function transferDocReducer(state = initialState, action: DocumentActions): TransferState {
-  console.log(action);
   switch (action.type) {
     case DocumentActionTypes.LoadDocuments:
-      console.log('load');
       return {
         ...state,
         documents: action.payload
@@ -37,7 +35,6 @@ export function transferDocReducer(state = initialState, action: DocumentActions
         documents: [...state.documents, action.payload]
       };
     default:
-      console.log({action});
       return state;
   }
 }

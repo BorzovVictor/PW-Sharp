@@ -22,7 +22,6 @@ import {usersReducer} from '@app/store/reducers/users.reducer';
 import {transactionsReducer} from '@app/store/reducers/transactions.reducer';
 import {transferDocReducer} from '@app/store/reducers/trnsfer-doc.reducer';
 
-
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenName);
 }

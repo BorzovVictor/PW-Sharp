@@ -1,5 +1,5 @@
 import {Action} from '@ngrx/store';
-import {User} from '@app/shared/models';
+import {User, UserLookUpModel} from '@app/shared/models';
 
 export enum UserActions {
   GetCurrentUser = '[Users] Get current user',
@@ -8,7 +8,7 @@ export enum UserActions {
 
 export class UsersLoad implements Action {
   readonly type = UserActions.LoadUsers;
-  constructor(public payload: User[]) {}
+  constructor(public payload: UserLookUpModel[]) {}
 }
 
 export class GetCurrentUser implements Action {

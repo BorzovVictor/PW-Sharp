@@ -1,3 +1,4 @@
+<form (submit)="onLoginClick($event)">
 <dx-validation-group>
     <div class="login-header">
         <div class="title">{{appInfo.title}}</div>
@@ -11,7 +12,7 @@
         </dx-text-box>
     </div>
     <div class="dx-field">
-        <dx-text-box mode="password" [(value)]="password" placeholder="Password" width="100%">
+        <dx-text-box mode="password" [(value)]="password" (onKeyUp)="onPasswordSubmit($event)" placeholder="Password" width="100%">
             <dx-validator>
                 <dxi-validation-rule type="required" message="Password is required"></dxi-validation-rule>
             </dx-validator>
@@ -24,3 +25,4 @@
         <dx-button type="normal" text="Create an account" width="100%" (onClick)="createAccount($event)"></dx-button>
     </div>
 </dx-validation-group>
+</form>

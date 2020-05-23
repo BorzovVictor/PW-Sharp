@@ -1,10 +1,10 @@
-import {User} from '@app/shared/models';
+import {User, UserLookUpModel} from '@app/shared/models';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {UserActions, UsersAction} from '@app/store/actions/users.action';
 
 export interface UserState {
   currentUser: User;
-  users: User[];
+  users: UserLookUpModel[];
 }
 
 const initialState: UserState = {

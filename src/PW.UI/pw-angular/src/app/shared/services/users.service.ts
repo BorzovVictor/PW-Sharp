@@ -6,7 +6,7 @@ import {User, UserLookUpModel} from '../models';
 import {HttpHelpersService} from '@app/shared/helpers';
 import {Store} from '@ngrx/store';
 import {UserState} from '../../store/reducers/users.reducer';
-import {GetCurrentUser} from '@app/store/actions/users.action';
+import {GetCurrentUser, UsersLoad} from '@app/store/actions/users.action';
 
 @Injectable({
   providedIn: 'root'
@@ -22,16 +22,21 @@ export class UsersService {
   ) {
   }
 
-  getSelfInfo(): void {
-    this.http.get<User>(`${this.prefix}/getSelfInfo`).toPromise()
+  getSelfInfo(): Promise<User> {
+    return this.http.get<User>(`${this.prefix}/getSelfInfo`).toPromise()
       .then((user: User) => {
         this.store.dispatch(new GetCurrentUser(user));
+        return user;
       });
   }
 
-  load(loadOptions): Observable<UserLookUpModel[]> {
+  load(loadOptions): Promise<any> {
     const params = this.httpHelpers.getParams(loadOptions);
-    return this.http.get<UserLookUpModel[]>(this.prefix, {params});
+    return this.http.get<UserLookUpModel[]>(this.prefix, {params}).toPromise()
+      .then((users: UserLookUpModel[]) => {
+        this.store.dispatch(new UsersLoad(users));
+        return {data: users, totalCount: users?.length};
+      });
   }
 
   loadAll(loadOptions): Observable<UserLookUpModel[]> {

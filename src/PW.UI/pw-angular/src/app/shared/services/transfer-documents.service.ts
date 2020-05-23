@@ -22,7 +22,6 @@ export class TransferDocumentsService {
     return this.http.get<TransferDocument[]>(`${this.prefix}/transferDocuments`).toPromise()
       .then((docs: TransferDocument[]) => {
         // update store
-        console.log('load service');
         this.store.dispatch(new documentActions.DocumentsLoad(docs));
         return {data: docs, totalCount: docs?.length};
       });

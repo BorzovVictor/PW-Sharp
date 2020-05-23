@@ -38,12 +38,9 @@ export class TransferPwComponent implements OnInit {
     this.createDataSource();
 
     this.toolbarItems = [];
-    this.store.select(getCurrentUser).subscribe((user: User) => {
-        this.currentUser = user;
-      }, error => {
-        console.log(error);
-      }
-    );
+    this.userService.getSelfInfo().then((user: User) => {
+      this.currentUser = user;
+    });
   }
 
   ngOnInit() {
@@ -92,11 +89,11 @@ export class TransferPwComponent implements OnInit {
           if (loadOptions.searchValue != null) {
             console.log({loadOptions});
             if (loadOptions.searchValue.toString().length > 2) {
-              return this.userService.load(loadOptions).toPromise();
+              return this.userService.load(loadOptions);
             }
           } else {
             console.log('userLookUpStore');
-            return this.userService.load(loadOptions).toPromise();
+            return this.userService.load(loadOptions);
           }
         },
         byKey: (key: number) => {
@@ -119,12 +116,6 @@ export class TransferPwComponent implements OnInit {
 
     this.toolbarItems = e.toolbarOptions.items;
 
-    // this.toolbarItems.forEach(item => {
-    //   if (item.name === 'addRowButton') {
-    //     item.options.hint = 'transfer money';
-    //     item.options.icon = 'money';
-    //   }
-    // });
     this.toolbarItems.push({
       location: 'after',
       widget: 'dxButton',

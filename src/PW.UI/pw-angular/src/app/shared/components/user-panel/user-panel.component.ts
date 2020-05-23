@@ -35,17 +35,9 @@ export class UserPanelComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.store.select(getCurrentUser).subscribe((user: User) => {
+    this.userService.getSelfInfo().then((user: User) => {
       this.currentUser = user;
-    }, error => {
-      console.log({error});
     });
-
-    // this.userService.getCurrentUser().then(() => {
-    //   this.store.pipe(select(fromUser.getCurrentUser)).subscribe(
-    //     user => this.currentUser = user
-    //   );
-    // });
   }
 }
 

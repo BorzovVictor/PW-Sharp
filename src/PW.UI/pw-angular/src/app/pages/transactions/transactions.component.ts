@@ -34,10 +34,8 @@ export class TransactionsComponent implements OnInit {
     this.createUserStore();
     this.loadUserLookUpStore();
 
-    this.store.select(getCurrentUser).subscribe((user: User) => {
+    this.userService.getSelfInfo().then((user: User) => {
       this.currentUser = user;
-    }, error => {
-      console.log({error});
     });
   }
 
@@ -100,10 +98,10 @@ export class TransactionsComponent implements OnInit {
         load: (loadOptions: any) => {
           if (loadOptions.searchValue != null) {
             if (loadOptions.searchValue.toString().length > 2) {
-              return this.userService.load(loadOptions).toPromise();
+              return this.userService.load(loadOptions);
             }
           } else {
-            return this.userService.load(loadOptions).toPromise();
+            return this.userService.load(loadOptions);
           }
         },
         byKey: (key: number) => {
@@ -114,7 +112,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   onInitNewRow(e: any) {
-    this.popupTitle = this.transferBase ? 'Повтор выполненого перевода' : 'Новый перевод';
+    this.popupTitle = this.transferBase ? 'Repeat a completed transaction' : 'New transaction';
     if (this.transferBase) {
       console.log({e});
       e.data.corresponded = this.focusedRow.corresponded;
@@ -178,6 +176,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   createBaseTransfer() {
+    debugger;
     this.transferBase = this.focusedRow.corresponded !== this.currentUser.id;
     this.dataGrid.instance.addRow();
   }
