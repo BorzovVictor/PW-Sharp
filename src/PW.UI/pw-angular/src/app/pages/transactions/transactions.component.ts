@@ -1,10 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {DxDataGridComponent} from 'devextreme-angular';
 import CustomStore from 'devextreme/data/custom_store';
-import {TransactionModel, TransferNewDocumentModel, UserInfoModel} from '@app/shared/models';
+import {Transaction, TransferNewDocumentModel, User} from '@app/shared/models';
 import {DxHelpersService} from '@app/shared/helpers';
 import {TransactionsService, TransferDocumentsService, UsersService} from '@app/shared/services';
-import {BalanceService} from '@services/balance.service';
+import {Store} from '@ngrx/store';
+import * as fromTransaction from '@app/store/reducers/transactions.reducer';
+import {getCurrentUser} from '@app/store/reducers/users.reducer';
 
 
 @Component({
@@ -17,22 +19,23 @@ export class TransactionsComponent implements OnInit {
   dataStore: CustomStore;
   userStore: {};
   userLookUpStore: {};
-  focusedRow: TransactionModel;
+  focusedRow: Transaction;
   transferBase = false;
-  currentUser: UserInfoModel;
+  currentUser: User;
   popupTitle: string;
   toolbarItems: any;
 
   constructor(private service: TransactionsService,
               private docService: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
-              private balanceService: BalanceService,
-              private userService: UsersService) {
+              private userService: UsersService,
+              private store: Store<fromTransaction.State>) {
     this.createDataSource();
     this.createUserStore();
     this.loadUserLookUpStore();
-    this.userService.getSelfInfo().subscribe(value => {
-      this.currentUser = value;
+
+    this.store.select(getCurrentUser).subscribe((user: User) => {
+      this.currentUser = user;
     }, error => {
       console.log({error});
     });
@@ -45,7 +48,7 @@ export class TransactionsComponent implements OnInit {
     this.dataStore = new CustomStore({
       key: 'id',
       load: (loadOptions: any) => {
-        return this.service.loadData(loadOptions).toPromise();
+        return this.service.loadData(loadOptions);
       },
       insert: (values) => {
         // console.log(values);
@@ -53,10 +56,12 @@ export class TransactionsComponent implements OnInit {
         model.recipient = values.corresponded;
         model.amount = values.amount;
         model.description = values.descriptions;
-        const result = this.docService.create(model).toPromise()
+        const result = this.docService.create(model)
           .then((data: any) => {
             console.log(data);
-            this.balanceService.add(data.amount * -1);
+            // this.balanceService.add(data.amount * -1);
+
+            this.userService.getSelfInfo();
             return {
               data: data.data,
               totalCount: data.totalCount,

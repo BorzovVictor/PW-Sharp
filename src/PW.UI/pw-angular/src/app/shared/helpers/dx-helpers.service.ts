@@ -12,7 +12,6 @@ export class DxHelpersService {
         resolve();
       })
         .catch((error) => {
-          console.log(error);
           reject(error);
           if (showMessage) {
             notify(error, 'error', 3000);

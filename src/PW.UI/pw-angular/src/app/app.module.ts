@@ -15,6 +15,13 @@ import {RegisterFormModule} from '@app/shared/components/register-form/register-
 import {ToastrModule} from 'ngx-toastr';
 import {AppInfoService, ScreenService} from '@app/shared/services';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {StoreModule} from '@ngrx/store';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+
+import {usersReducer} from '@app/store/reducers/users.reducer';
+import {transactionsReducer} from '@app/store/reducers/transactions.reducer';
+import {transferDocReducer} from '@app/store/reducers/trnsfer-doc.reducer';
+
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenName);
@@ -43,6 +50,15 @@ export function tokenGetter() {
       config: {
         tokenGetter
       }
+    }),
+    StoreModule.forRoot({}),
+    StoreModule.forFeature('users', usersReducer),
+    StoreModule.forFeature('transactions', transactionsReducer),
+    StoreModule.forFeature('transferDocuments', transferDocReducer),
+    StoreDevtoolsModule.instrument({
+      name: 'PW',
+      maxAge: 25,
+      logOnly: environment.production
     })
   ],
   providers: [

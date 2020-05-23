@@ -1,10 +1,10 @@
 <div class="user-panel">
-    <div class="user-info" *ngIf="userInfo$|async as userInfo">
+    <div class="user-info" *ngIf="currentUser">
         <div class="image-container">
             <div class="user-image"></div>
         </div>
-      <div class="user-name">{{userInfo.userName}}</div>
-      <div class="user-name">({{balance| number}} pw)</div>
+      <div class="user-name">{{currentUser.userName}}</div>
+      <div class="user-name">({{currentUser.currentBalance| number}} pw)</div>
     </div>
     <dx-context-menu
         *ngIf="menuMode === 'context'"

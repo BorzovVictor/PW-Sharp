@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
 import {environment} from '@environments/environment';
-import {TransferDocumentsModel, TransferNewDocumentModel} from '@app/shared/models';
+import {TransferDocument, TransferNewDocumentModel} from '@app/shared/models';
+import {Store} from '@ngrx/store';
+
+import * as fromDocuments from '@app/store/reducers/trnsfer-doc.reducer';
+import * as documentActions from '@app/store/actions/documents.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +13,26 @@ import {TransferDocumentsModel, TransferNewDocumentModel} from '@app/shared/mode
 export class TransferDocumentsService {
   prefix = `${environment.apiUrl}/api/documents`;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private store: Store<fromDocuments.State>) {
 
   }
 
-  load(): Observable<TransferDocumentsModel[]> {
-    return this.http.get<TransferDocumentsModel[]>(`${this.prefix}/transferDocuments`);
+  load(): Promise<any> {
+    return this.http.get<TransferDocument[]>(`${this.prefix}/transferDocuments`).toPromise()
+      .then((docs: TransferDocument[]) => {
+        // update store
+        console.log('load service');
+        this.store.dispatch(new documentActions.DocumentsLoad(docs));
+        return {data: docs, totalCount: docs?.length};
+      });
   }
 
-  create(model: TransferNewDocumentModel): Observable<TransferDocumentsModel> {
-    return this.http.post<TransferDocumentsModel>(`${this.prefix}/create`, model);
+  create(model: TransferNewDocumentModel): Promise<TransferDocument> {
+    return this.http.post<TransferDocument>(`${this.prefix}/create`, model).toPromise()
+      .then((doc: TransferDocument) => {
+        this.store.dispatch(new documentActions.DocumentCreate(doc));
+        return doc;
+      });
   }
 }

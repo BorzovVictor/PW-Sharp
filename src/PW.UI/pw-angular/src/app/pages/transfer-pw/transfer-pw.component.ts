@@ -1,10 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import CustomStore from 'devextreme/data/custom_store';
 import {DxDataGridComponent} from 'devextreme-angular';
-import {TransferDocumentsModel, UserInfoModel, UserLookUpModel} from '../../shared/models';
+import {TransferDocument, User, UserLookUpModel} from '../../shared/models';
 import {TransferDocumentsService} from '@services/transfer-documents.service';
 import {UsersService} from '@services/users.service';
 import {DxHelpersService} from '@app/shared/helpers';
+
+import * as fromDocuments from '@app/store/reducers/trnsfer-doc.reducer';
+import {Store} from '@ngrx/store';
+import {getCurrentUser} from '@app/store/reducers/users.reducer';
 
 @Component({
   selector: 'app-transfer-pw',
@@ -16,28 +20,30 @@ export class TransferPwComponent implements OnInit {
   dataStore: CustomStore;
   userStore: {};
   userLookUpStore: {};
-  focusedRow: TransferDocumentsModel;
+  focusedRow: TransferDocument;
   transferBase = false;
-  currentUser: UserInfoModel;
+  currentUser: User;
   popupTitle: string;
 
   toolbarItems: any;
 
   constructor(private service: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
-              private userService: UsersService) {
+              private userService: UsersService,
+              private store: Store<fromDocuments.State>
+  ) {
 
     this.createUserStore();
     this.loadUserLookUpStore();
     this.createDataSource();
 
     this.toolbarItems = [];
-    this.userService.getSelfInfo().subscribe(value => {
-      this.currentUser = value;
-    }, error1 => {
-      console.log(error1.error);
-    });
-
+    this.store.select(getCurrentUser).subscribe((user: User) => {
+        this.currentUser = user;
+      }, error => {
+        console.log(error);
+      }
+    );
   }
 
   ngOnInit() {
@@ -47,10 +53,10 @@ export class TransferPwComponent implements OnInit {
     this.dataStore = new CustomStore({
       key: 'id',
       load: (loadOptions: any) => {
-        return this.service.load().toPromise();
+        return this.service.load();
       },
       insert: (values) => {
-        const result = this.service.create(values).toPromise();
+        const result = this.service.create(values);
         return this.dxHelpers.checkCRUDresult(result);
       }
     });

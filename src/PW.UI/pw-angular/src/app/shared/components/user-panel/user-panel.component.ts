@@ -1,12 +1,14 @@
-import {Component, NgModule, Input, OnInit, OnDestroy} from '@angular/core';
+import {Component, NgModule, Input, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {DxListModule} from 'devextreme-angular/ui/list';
 import {DxContextMenuModule} from 'devextreme-angular/ui/context-menu';
-import {Observable, Subscription} from 'rxjs';
-import {UserInfoModel} from '@app/shared/models';
+import {Observable} from 'rxjs';
+import {User} from '@app/shared/models';
 import {UsersService} from '@app/shared/services';
-import {BalanceService} from '@services/balance.service';
+import {select, Store} from '@ngrx/store';
+import * as fromUser from '../../../store/reducers/users.reducer';
+import {getCurrentUser} from '../../../store/reducers/users.reducer';
 
 
 @Component({
@@ -15,38 +17,35 @@ import {BalanceService} from '@services/balance.service';
   styleUrls: ['./user-panel.component.scss']
 })
 
-export class UserPanelComponent implements OnInit, OnDestroy {
+export class UserPanelComponent implements OnInit {
   @Input()
   menuItems: any;
 
   @Input()
   menuMode: string;
 
-  balance: number;
+  currentUser: User;
 
-  sub: Subscription;
+  userInfo$: Observable<User>;
 
-  userInfo$: Observable<UserInfoModel>;
-  balanceChanged = false;
-
-  constructor(private userService: UsersService, public balanceService: BalanceService) {
-    this.balance = 0;
+  constructor(
+    private userService: UsersService,
+    private store: Store<fromUser.UserState>) {
   }
 
   ngOnInit(): void {
-    this.userInfo$ = this.userService.getSelfInfo();
 
-    this.sub = this.balanceService.userBalance.subscribe(balance => {
-      console.log('balance changed');
-      this.balance = balance;
-      console.log({balance});
+    this.store.select(getCurrentUser).subscribe((user: User) => {
+      this.currentUser = user;
+    }, error => {
+      console.log({error});
     });
-  }
 
-  ngOnDestroy(): void {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
+    // this.userService.getCurrentUser().then(() => {
+    //   this.store.pipe(select(fromUser.getCurrentUser)).subscribe(
+    //     user => this.currentUser = user
+    //   );
+    // });
   }
 }
 

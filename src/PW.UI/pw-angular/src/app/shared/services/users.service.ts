@@ -1,9 +1,12 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
+import {Injectable, Output} from '@angular/core';
 import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {UserInfoModel, UserLookUpModel} from '../models';
+import {User, UserLookUpModel} from '../models';
 import {HttpHelpersService} from '@app/shared/helpers';
+import {Store} from '@ngrx/store';
+import {UserCurrent} from '@app/store/actions/users.action';
+import {UserState} from '../../store/reducers/users.reducer';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +14,19 @@ import {HttpHelpersService} from '@app/shared/helpers';
 export class UsersService {
   prefix = `${environment.apiUrl}/api/users`;
 
-  @Output() change: EventEmitter<boolean> = new EventEmitter();
   refreshBalance = false;
 
   constructor(private http: HttpClient,
-              private httpHelpers: HttpHelpersService) {
+              private httpHelpers: HttpHelpersService,
+              private store: Store<UserState>
+  ) {
   }
 
-  getSelfInfo(): Observable<UserInfoModel> {
-    return this.http.get<UserInfoModel>(`${this.prefix}/getSelfInfo`);
+  getSelfInfo(): void {
+    this.http.get<User>(`${this.prefix}/getSelfInfo`).toPromise()
+      .then((user: User) => {
+        this.store.dispatch(new UserCurrent(user));
+      });
   }
 
   load(loadOptions): Observable<UserLookUpModel[]> {
@@ -39,6 +46,5 @@ export class UsersService {
 
   balanceChanged() {
     this.refreshBalance = true;
-    this.change.emit(this.refreshBalance);
   }
 }

@@ -9,6 +9,11 @@ import {DxValidatorModule} from 'devextreme-angular/ui/validator';
 import {DxValidationGroupModule} from 'devextreme-angular/ui/validation-group';
 import {environment} from '@environments/environment';
 import {AppInfoService, AppNotifyService, AuthService} from '@app/shared/services';
+import {Store} from '@ngrx/store';
+import {User, UserWithToken} from '@app/shared/models';
+
+import {UserCurrent} from '@app/store/actions/users.action';
+import {UserState} from '../../../store/reducers/users.reducer';
 
 @Component({
   selector: 'app-login-form',
@@ -25,7 +30,8 @@ export class LoginFormComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     public appInfo: AppInfoService,
-    private notify: AppNotifyService
+    private notify: AppNotifyService,
+    private store: Store<UserState>
   ) {
     // redirect to home if already logged in
     if (this.authService.currentUserValue) {
@@ -44,8 +50,9 @@ export class LoginFormComponent implements OnInit {
       return;
     }
 
-    this.authService.login(this.login, this.password).subscribe(next => {
-        this.notify.info(`Welcome ${this.authService.currentUserValue.userName}`, '', true);
+    this.authService.login(this.login, this.password).subscribe((user: UserWithToken) => {
+        this.store.dispatch(new UserCurrent(user));
+        this.notify.info(`Welcome ${user.userName}`, '', true);
       },
       error => {
         this.notify.error(error, 'Error', true);

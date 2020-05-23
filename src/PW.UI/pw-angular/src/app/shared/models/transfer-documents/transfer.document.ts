@@ -1,4 +1,4 @@
-export interface TransferDocumentsModel {
+export interface TransferDocument {
   id: number;
   dateTransfer: Date;
   sender: number;

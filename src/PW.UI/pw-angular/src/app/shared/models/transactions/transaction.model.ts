@@ -1,4 +1,4 @@
-export interface TransactionModel {
+export interface Transaction {
   id: number;
   dateTransfer: Date;
   corresponded: number;

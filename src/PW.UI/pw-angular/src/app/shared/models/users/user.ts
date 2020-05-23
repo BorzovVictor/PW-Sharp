@@ -1,5 +1,6 @@
-﻿import {UserInfoModel} from '@app/shared/models/users/user-info.model';
-
-export interface User extends UserInfoModel {
-  token?: string;
+export interface User {
+  id: number;
+  userName: string;
+  email: string;
+  currentBalance: number;
 }

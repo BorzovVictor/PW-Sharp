@@ -4,11 +4,15 @@ import {Router} from '@angular/router';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {Store} from '@ngrx/store';
 
-import {User} from '../models';
+import {UserWithToken} from '../models';
 import {environment} from '@environments/environment';
-import {UserInfoModel} from '@app/shared/models/users/user-info.model';
+import {User} from '@app/shared/models/users/user';
 import {UserRegisterModel} from '@app/shared/models/users/user-register.model';
+import {UserCurrent} from '@app/store/actions/users.action';
+
+import {UserState} from '../../store/reducers/users.reducer';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -16,15 +20,15 @@ export class AuthService {
   token: string;
 
   jwtHelper = new JwtHelperService();
-  private currentUserSubject: BehaviorSubject<User>;
-  public currentUser: Observable<User>;
+  private currentUserSubject: BehaviorSubject<UserWithToken>;
+  public currentUser: Observable<UserWithToken>;
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem(environment.tokenName)));
+  constructor(private http: HttpClient, private router: Router, private store: Store<UserState>) {
+    this.currentUserSubject = new BehaviorSubject<UserWithToken>(JSON.parse(localStorage.getItem(environment.tokenName)));
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  public get currentUserValue(): User {
+  public get currentUserValue(): UserWithToken {
     return this.currentUserSubject.value;
   }
 
@@ -33,13 +37,14 @@ export class AuthService {
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(environment.tokenName, JSON.stringify(user));
+        this.store.dispatch(new UserCurrent(user));
         this.currentUserSubject.next(user);
         return user;
       }));
   }
 
-  register(model: UserRegisterModel): Observable<UserInfoModel> {
-    return this.http.post<UserInfoModel>(`${this.prefix}/register`, model);
+  register(model: UserRegisterModel): Observable<User> {
+    return this.http.post<User>(`${this.prefix}/register`, model);
   }
 
   logout() {

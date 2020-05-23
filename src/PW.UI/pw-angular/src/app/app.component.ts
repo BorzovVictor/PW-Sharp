@@ -19,9 +19,13 @@ export class AppComponent {
               private screen: ScreenService,
               public appInfo: AppInfoService
   ) {
+
   }
 
   isAuthorized() {
+    // this.store.select('loginPage').subscribe(value => {
+    //   console.log(value);
+    // });
     return this.authService.loggedIn();
   }
 }
