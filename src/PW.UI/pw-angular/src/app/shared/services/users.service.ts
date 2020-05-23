@@ -5,8 +5,8 @@ import {Observable} from 'rxjs';
 import {User, UserLookUpModel} from '../models';
 import {HttpHelpersService} from '@app/shared/helpers';
 import {Store} from '@ngrx/store';
-import {UserCurrent} from '@app/store/actions/users.action';
 import {UserState} from '../../store/reducers/users.reducer';
+import {GetCurrentUser} from '@app/store/actions/users.action';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class UsersService {
   getSelfInfo(): void {
     this.http.get<User>(`${this.prefix}/getSelfInfo`).toPromise()
       .then((user: User) => {
-        this.store.dispatch(new UserCurrent(user));
+        this.store.dispatch(new GetCurrentUser(user));
       });
   }
 

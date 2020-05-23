@@ -1,6 +1,6 @@
-import {USER_ACTION} from '@app/store/actions/users.action';
 import {User} from '@app/shared/models';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {UserActions, UsersAction} from '@app/store/actions/users.action';
 
 export interface UserState {
   currentUser: User;
@@ -24,12 +24,17 @@ export const getUsers = createSelector(
   state => state.users
 );
 
-export function usersReducer(state = initialState, action): UserState {
+export function usersReducer(state = initialState, action: UsersAction): UserState {
   switch (action.type) {
-    case USER_ACTION.USER_CURRENT:
+    case UserActions.GetCurrentUser:
       return {
         ...state,
         currentUser: action.payload
+      };
+    case UserActions.LoadUsers:
+      return {
+        ...state,
+        users: action.payload
       };
     default:
       return state;

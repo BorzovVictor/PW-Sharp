@@ -10,10 +10,9 @@ import {DxValidationGroupModule} from 'devextreme-angular/ui/validation-group';
 import {environment} from '@environments/environment';
 import {AppInfoService, AppNotifyService, AuthService} from '@app/shared/services';
 import {Store} from '@ngrx/store';
-import {User, UserWithToken} from '@app/shared/models';
-
-import {UserCurrent} from '@app/store/actions/users.action';
-import {UserState} from '../../../store/reducers/users.reducer';
+import {UserWithToken} from '@app/shared/models';
+import {UserState} from '@app/store/reducers/users.reducer';
+import {GetCurrentUser} from '@app/store/actions/users.action';
 
 @Component({
   selector: 'app-login-form',
@@ -51,7 +50,7 @@ export class LoginFormComponent implements OnInit {
     }
 
     this.authService.login(this.login, this.password).subscribe((user: UserWithToken) => {
-        this.store.dispatch(new UserCurrent(user));
+        this.store.dispatch(new GetCurrentUser(user));
         this.notify.info(`Welcome ${user.userName}`, '', true);
       },
       error => {

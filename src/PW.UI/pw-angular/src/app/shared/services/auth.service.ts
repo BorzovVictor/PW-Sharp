@@ -1,18 +1,19 @@
 ﻿﻿import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {environment} from '@environments/environment';
+
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {Store} from '@ngrx/store';
 
 import {UserWithToken} from '../models';
-import {environment} from '@environments/environment';
 import {User} from '@app/shared/models/users/user';
 import {UserRegisterModel} from '@app/shared/models/users/user-register.model';
-import {UserCurrent} from '@app/store/actions/users.action';
-
-import {UserState} from '../../store/reducers/users.reducer';
+import {UserState} from '@app/store/reducers/users.reducer';
+import {GetCurrentUser} from '@app/store/actions/users.action';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -37,7 +38,7 @@ export class AuthService {
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(environment.tokenName, JSON.stringify(user));
-        this.store.dispatch(new UserCurrent(user));
+        this.store.dispatch(new GetCurrentUser(user));
         this.currentUserSubject.next(user);
         return user;
       }));

@@ -51,16 +51,12 @@ export class TransactionsComponent implements OnInit {
         return this.service.loadData(loadOptions);
       },
       insert: (values) => {
-        // console.log(values);
         const model = ({} as TransferNewDocumentModel);
         model.recipient = values.corresponded;
         model.amount = values.amount;
         model.description = values.descriptions;
         const result = this.docService.create(model)
           .then((data: any) => {
-            console.log(data);
-            // this.balanceService.add(data.amount * -1);
-
             this.userService.getSelfInfo();
             return {
               data: data.data,
