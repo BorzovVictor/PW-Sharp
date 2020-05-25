@@ -128,7 +128,7 @@ export class TransactionsComponent implements OnInit {
       widget: 'dxButton',
       options: {
         icon: 'money',
-        hint: 'выолнить перевод',
+        hint: 'transfer money',
         onClick: this.createTransfer.bind(this)
       }
     });
@@ -137,7 +137,7 @@ export class TransactionsComponent implements OnInit {
       widget: 'dxButton',
       options: {
         icon: 'repeat',
-        hint: 'повторить перевод',
+        hint: 'repeat transfer',
         onClick: this.createBaseTransfer.bind(this)
       }
     });
@@ -146,7 +146,7 @@ export class TransactionsComponent implements OnInit {
       widget: 'dxButton',
       options: {
         icon: 'refresh',
-        hint: 'обновить данные',
+        hint: 'refresh',
         onClick: this.refreshDataGrid.bind(this)
       }
     });
@@ -155,7 +155,7 @@ export class TransactionsComponent implements OnInit {
       widget: 'dxButton',
       options: {
         icon: 'exportxlsx',
-        hint: 'сохранить данные в Excel',
+        hint: 'export data to Excel',
         onClick: this.exportDataGrid.bind(this)
       }
     });
@@ -164,7 +164,7 @@ export class TransactionsComponent implements OnInit {
       widget: 'dxButton',
       options: {
         icon: 'columnchooser',
-        hint: 'выбор столбцов',
+        hint: 'choose columns',
         onClick: this.columnChooserButton.bind(this)
       }
     });
