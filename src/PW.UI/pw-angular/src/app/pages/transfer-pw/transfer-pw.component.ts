@@ -53,7 +53,19 @@ export class TransferPwComponent implements OnInit {
         return this.service.load();
       },
       insert: (values) => {
-        const result = this.service.create(values);
+        const result = this.service.create(values)
+          .then((data: any) => {
+            this.userService.getSelfInfo();
+            return {
+              data: data.data,
+              totalCount: data.totalCount,
+              summary: data.summary,
+              groupCount: data.groupCount
+            };
+          })
+          .catch(error => {
+            throw error;
+          });
         return this.dxHelpers.checkCRUDresult(result);
       }
     });

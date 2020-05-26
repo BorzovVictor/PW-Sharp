@@ -15,5 +15,6 @@ namespace PW.Infrastructure
         Task<UserDto> GetUserByEmail(string email);
         Task<UserInfoDto> GetUserInfoById(int userId);
         Task<IEnumerable<PwUser>> LoadUsers(UserFilter filter, int? currentUserId);
+        Task<PwUser> GetById(int userId);
     }
 }

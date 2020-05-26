@@ -42,6 +42,7 @@ namespace PW.Infrastructure
             services.AddTransient<ICreateNewDocumentCase, CreateNewDocument>();
             services.AddTransient<IGetUserInfoByIdCase, GetUserInfoById>();
             services.AddTransient<ILoadUsersCase, LoadUsers>();
+            services.AddTransient<IGetUserByIdCase, GetUserById>();
 
             return services;
         }

@@ -24,6 +24,11 @@ export const getUsers = createSelector(
   state => state.users
 );
 
+export const selectUser = createSelector(
+  getUsers,
+  users => (key: number) => users[key]
+);
+
 export function usersReducer(state = initialState, action: UsersAction): UserState {
   switch (action.type) {
     case UserActions.GetCurrentUser:

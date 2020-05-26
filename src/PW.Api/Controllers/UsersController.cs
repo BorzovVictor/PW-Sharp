@@ -55,21 +55,24 @@ namespace PW.Api.Controllers
             }
         }
 
-        // [HttpGet("{id}")]
-        // [ProducesResponseType(typeof(PwUser), 200)]
-        // [ProducesResponseType(400)]
-        // [Produces("application/json")]
-        // public async Task<IActionResult> GetUserById(int id)
-        // {
-        //     try
-        //     {
-        //         return Ok(await _userService.GetUserById(id));
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         return BadRequest(e.GetBaseException().Message);
-        //     }
-        // }
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PwUser), 200)]
+        [ProducesResponseType(400)]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetUserById([FromServices] IGetUserByIdCase service, int id)
+        {
+            try
+            {
+                var result = await service.Execute(id);
+                return result.Succeded
+                    ? (IActionResult) Ok(result.Success)
+                    : BadRequest(result.Failure);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.GetBaseException().Message);
+            }
+        }
 
     }
 }

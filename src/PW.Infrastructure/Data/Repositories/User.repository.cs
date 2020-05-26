@@ -61,6 +61,11 @@ namespace PW.Infrastructure
             return _mapper.Map<UserInfoDto>(user);
         }
 
+        public async Task<PwUser> GetById(int userId)
+        {
+            var result = await Db.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            return _mapper.Map<PwUser>(result);
+        }
         public async Task<IEnumerable<PwUser>> LoadUsers(UserFilter filter, int? currentUserId)
         {
             if (filter.IsEmpty())

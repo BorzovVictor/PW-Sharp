@@ -4,9 +4,9 @@ import CustomStore from 'devextreme/data/custom_store';
 import {Transaction, TransferNewDocumentModel, User} from '@app/shared/models';
 import {DxHelpersService} from '@app/shared/helpers';
 import {TransactionsService, TransferDocumentsService, UsersService} from '@app/shared/services';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import * as fromTransaction from '@app/store/reducers/transactions.reducer';
-import {getCurrentUser} from '@app/store/reducers/users.reducer';
+import {getUsers, selectUser} from '@app/store/reducers/users.reducer';
 
 
 @Component({
@@ -106,6 +106,7 @@ export class TransactionsComponent implements OnInit {
         },
         byKey: (key: number) => {
           return this.userService.getById(key).toPromise();
+          // return this.store.pipe(select(selectUser, key)).toPromise();
         }
       })
     };
@@ -114,7 +115,6 @@ export class TransactionsComponent implements OnInit {
   onInitNewRow(e: any) {
     this.popupTitle = this.transferBase ? 'Repeat a completed transaction' : 'New transaction';
     if (this.transferBase) {
-      console.log({e});
       e.data.corresponded = this.focusedRow.corresponded;
       e.data.amount = this.focusedRow.amount * -1;
     }
@@ -176,7 +176,6 @@ export class TransactionsComponent implements OnInit {
   }
 
   createBaseTransfer() {
-    debugger;
     this.transferBase = this.focusedRow.corresponded !== this.currentUser.id;
     this.dataGrid.instance.addRow();
   }
