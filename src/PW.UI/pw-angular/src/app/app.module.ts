@@ -11,16 +11,18 @@ import {AppErrorHandler} from '@app/shared/helpers/app-error.handler';
 import {AppComponent} from './app.component';
 import {SideNavOuterToolbarModule, SideNavInnerToolbarModule, SingleCardModule} from './layouts';
 import {FooterModule, LoginFormModule} from './shared/components';
-import {RegisterFormModule} from '@app/shared/components/register-form/register-form.component';
+import {RegisterFormModule} from '@app/user/register-form/register-form.component';
 import {ToastrModule} from 'ngx-toastr';
 import {AppInfoService, ScreenService} from '@app/shared/services';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {StoreModule} from '@ngrx/store';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 
-import {usersReducer} from '@app/store/reducers/users.reducer';
+import {usersReducer} from '@app/user/state/users.reducer';
 import {transactionsReducer} from '@app/store/reducers/transactions.reducer';
 import {transferDocReducer} from '@app/store/reducers/trnsfer-doc.reducer';
+import {UserModule} from '@app/user/user.module';
+import {EffectsModule} from '@ngrx/effects';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenName);
@@ -38,9 +40,8 @@ export function tokenGetter() {
     SideNavInnerToolbarModule,
     SingleCardModule,
     FooterModule,
-    LoginFormModule,
     AppRoutingModule,
-    RegisterFormModule,
+    UserModule,
     ToastrModule.forRoot({
       progressBar: true,
       preventDuplicates: true,
@@ -51,7 +52,7 @@ export function tokenGetter() {
       }
     }),
     StoreModule.forRoot({}),
-    StoreModule.forFeature('users', usersReducer),
+    EffectsModule.forRoot([]),
     StoreModule.forFeature('transactions', transactionsReducer),
     StoreModule.forFeature('transferDocuments', transferDocReducer),
     StoreDevtoolsModule.instrument({

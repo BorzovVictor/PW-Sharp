@@ -1,5 +1,5 @@
 <h2 class="content-block">Transactions list</h2>
-<div class="dx-card content-block responsive-paddings">
+<div class="dx-card content-block responsive-paddings" *ngIf="users$ | async as users">
   <dx-data-grid #userGrid
                 id="transferGrid"
                 [dataSource]="dataStore"
@@ -47,7 +47,7 @@
     </dxo-editing>
 
     <dxi-column dataField="corresponded" caption="Recipient" [visible]="false" [showInColumnChooser]="false">
-      <dxo-lookup [dataSource]="userLookUpStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+      <dxo-lookup [dataSource]="users" valueExpr="id" displayExpr="userName"></dxo-lookup>
     </dxi-column>
     <dxi-column dataField="dateTransfer" caption="Date" dataType="datetime" sortOrder="desc"></dxi-column>
     <dxi-column dataField="correspondedName" caption="User"></dxi-column>

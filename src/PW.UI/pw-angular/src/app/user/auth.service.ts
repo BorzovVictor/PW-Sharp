@@ -9,11 +9,11 @@ import {map} from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {Store} from '@ngrx/store';
 
-import {UserWithToken} from '../models';
+import {UserWithToken} from '../shared/models';
 import {User} from '@app/shared/models/users/user';
 import {UserRegisterModel} from '@app/shared/models/users/user-register.model';
-import {UserState} from '@app/store/reducers/users.reducer';
-import {GetCurrentUser} from '@app/store/actions/users.action';
+import {UserState} from '@app/user/state/users.reducer';
+import {GetCurrentUser} from '@app/user/state/users.action';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {

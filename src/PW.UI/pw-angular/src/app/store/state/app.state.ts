@@ -1,4 +1,4 @@
-import {UserState} from '@app/store/reducers/users.reducer';
+import {UserState} from '@app/user/state/users.reducer';
 
 export interface State {
   users: UserState;

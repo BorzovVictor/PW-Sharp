@@ -2,16 +2,16 @@ import {Injectable, Output} from '@angular/core';
 import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {User, UserLookUpModel} from '../models';
+import {User, UserLookUpModel} from '../shared/models';
 import {HttpHelpersService} from '@app/shared/helpers';
 import {Store} from '@ngrx/store';
-import {UserState} from '../../store/reducers/users.reducer';
-import {GetCurrentUser, UsersLoad} from '@app/store/actions/users.action';
+import {UserState} from './state/users.reducer';
+import {GetCurrentUser, Load} from '@app/user/state/users.action';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UsersService {
+export class UserService {
   prefix = `${environment.apiUrl}/api/users`;
 
   refreshBalance = false;
@@ -30,16 +30,16 @@ export class UsersService {
       });
   }
 
-  load(loadOptions): Promise<any> {
-    const params = this.httpHelpers.getParams(loadOptions);
-    return this.http.get<UserLookUpModel[]>(this.prefix, {params}).toPromise()
-      .then((users: UserLookUpModel[]) => {
-        this.store.dispatch(new UsersLoad(users));
-        return {data: users, totalCount: users?.length};
-      });
-  }
+  // load(loadOptions): Promise<any> {
+  //   const params = this.httpHelpers.getParams(loadOptions);
+  //   return this.http.get<UserLookUpModel[]>(this.prefix, {params}).toPromise()
+  //     .then((users: UserLookUpModel[]) => {
+  //       this.store.dispatch(new Load(users));
+  //       return {data: users, totalCount: users?.length};
+  //     });
+  // }
 
-  loadAll(loadOptions): Observable<UserLookUpModel[]> {
+  loadAll(loadOptions?): Observable<UserLookUpModel[]> {
     let params = this.httpHelpers.getParams(loadOptions);
     params = params.set('exceptSelf', 'false');
     return this.http.get<UserLookUpModel[]>(this.prefix, {params});

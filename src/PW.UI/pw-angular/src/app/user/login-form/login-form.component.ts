@@ -8,11 +8,11 @@ import {DxTextBoxModule} from 'devextreme-angular/ui/text-box';
 import {DxValidatorModule} from 'devextreme-angular/ui/validator';
 import {DxValidationGroupModule} from 'devextreme-angular/ui/validation-group';
 import {environment} from '@environments/environment';
-import {AppInfoService, AppNotifyService, AuthService} from '@app/shared/services';
+import {AppInfoService, AppNotifyService, AuthService} from '@services/index';
 import {Store} from '@ngrx/store';
 import {UserWithToken} from '@app/shared/models';
-import {UserState} from '@app/store/reducers/users.reducer';
-import {GetCurrentUser} from '@app/store/actions/users.action';
+import {UserState} from '@app/user/state/users.reducer';
+import {GetCurrentUser} from '@app/user/state/users.action';
 
 @Component({
   selector: 'app-login-form',

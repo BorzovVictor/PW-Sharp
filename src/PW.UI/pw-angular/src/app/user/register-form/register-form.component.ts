@@ -14,7 +14,7 @@ import {
 import notify from 'devextreme/ui/notify';
 import {environment} from '@environments/environment';
 import {UserRegisterModel} from '@app/shared/models/users/user-register.model';
-import {AuthService} from '@services/auth.service';
+import {AuthService} from '@app/user/auth.service';
 
 
 @Component({

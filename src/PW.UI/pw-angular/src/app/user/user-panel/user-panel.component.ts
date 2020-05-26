@@ -5,10 +5,10 @@ import {DxListModule} from 'devextreme-angular/ui/list';
 import {DxContextMenuModule} from 'devextreme-angular/ui/context-menu';
 import {Observable} from 'rxjs';
 import {User} from '@app/shared/models';
-import {UsersService} from '@app/shared/services';
+import {UserService} from '@services/index';
 import {select, Store} from '@ngrx/store';
-import * as fromUser from '../../../store/reducers/users.reducer';
-import {getCurrentUser} from '../../../store/reducers/users.reducer';
+import * as fromUser from '../state/users.reducer';
+import {getCurrentUser} from '@app/user/state';
 
 
 @Component({
@@ -29,7 +29,7 @@ export class UserPanelComponent implements OnInit {
   userInfo$: Observable<User>;
 
   constructor(
-    private userService: UsersService,
+    private userService: UserService,
     private store: Store<fromUser.UserState>) {
   }
 

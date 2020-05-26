@@ -19,6 +19,9 @@ export class HttpHelpersService {
 
   getParams(filter): HttpParams {
     let params: HttpParams = new HttpParams();
+    if (!filter) {
+      return params;
+    }
     this.filterProps.forEach((i) => {
       if (i in filter && (filter[i])) {
         params = params.set(i, JSON.stringify(filter[i]));

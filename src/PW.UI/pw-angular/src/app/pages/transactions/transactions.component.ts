@@ -1,12 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {DxDataGridComponent} from 'devextreme-angular';
 import CustomStore from 'devextreme/data/custom_store';
-import {Transaction, TransferNewDocumentModel, User} from '@app/shared/models';
+import {Transaction, TransferNewDocumentModel, User, UserLookUpModel} from '@app/shared/models';
 import {DxHelpersService} from '@app/shared/helpers';
-import {TransactionsService, TransferDocumentsService, UsersService} from '@app/shared/services';
+import {TransactionsService, TransferDocumentsService, UserService} from '@app/shared/services';
 import {select, Store} from '@ngrx/store';
 import * as fromTransaction from '@app/store/reducers/transactions.reducer';
-import {getUsers, selectUser} from '@app/store/reducers/users.reducer';
+import * as fromUsers from '@app/user/state';
+import * as userActions from '@app/user/state/users.action';
+import {Observable} from 'rxjs';
 
 
 @Component({
@@ -24,15 +26,17 @@ export class TransactionsComponent implements OnInit {
   currentUser: User;
   popupTitle: string;
   toolbarItems: any;
+  users$: Observable<UserLookUpModel[]>;
+  usersErrorMessage$: Observable<string>;
+
 
   constructor(private service: TransactionsService,
               private docService: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
-              private userService: UsersService,
+              private userService: UserService,
               private store: Store<fromTransaction.State>) {
     this.createDataSource();
     this.createUserStore();
-    this.loadUserLookUpStore();
 
     this.userService.getSelfInfo().then((user: User) => {
       this.currentUser = user;
@@ -43,6 +47,8 @@ export class TransactionsComponent implements OnInit {
   }
 
   createDataSource() {
+
+
     this.dataStore = new CustomStore({
       key: 'id',
       load: (loadOptions: any) => {
@@ -72,44 +78,8 @@ export class TransactionsComponent implements OnInit {
   }
 
   createUserStore() {
-    this.userStore = {
-      store: new CustomStore({
-        key: 'id',
-        load: (loadOptions: any) => {
-          if (loadOptions.searchValue != null) {
-            if (loadOptions.searchValue.toString().length > 2) {
-              return this.userService.loadAll(loadOptions).toPromise();
-            }
-          } else {
-            return this.userService.loadAll(loadOptions).toPromise();
-          }
-        },
-        byKey: (key: number) => {
-          return this.userService.getById(key).toPromise();
-        }
-      })
-    };
-  }
-
-  loadUserLookUpStore() {
-    this.userLookUpStore = {
-      store: new CustomStore({
-        key: 'id',
-        load: (loadOptions: any) => {
-          if (loadOptions.searchValue != null) {
-            if (loadOptions.searchValue.toString().length > 2) {
-              return this.userService.load(loadOptions);
-            }
-          } else {
-            return this.userService.load(loadOptions);
-          }
-        },
-        byKey: (key: number) => {
-          return this.userService.getById(key).toPromise();
-          // return this.store.pipe(select(selectUser, key)).toPromise();
-        }
-      })
-    };
+    this.store.dispatch(new userActions.Load());
+    this.users$ = this.store.pipe(select(fromUsers.getUsers));
   }
 
   onInitNewRow(e: any) {

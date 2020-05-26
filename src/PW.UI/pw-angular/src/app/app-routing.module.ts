@@ -7,6 +7,7 @@ import {DxDataGridModule, DxFormModule} from 'devextreme-angular';
 import {TransactionsComponent} from './pages/transactions/transactions.component';
 import {TransferPwComponent} from '@app/pages/transfer-pw/transfer-pw.component';
 import {AuthGuard} from '@app/shared/services';
+import {SharedModule} from '@app/shared/shared.module';
 
 const routes: Routes = [
   {
@@ -41,7 +42,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), DxDataGridModule, DxFormModule],
+  imports: [RouterModule.forRoot(routes), DxDataGridModule, DxFormModule, SharedModule],
   exports: [RouterModule],
   declarations: [
     HomeComponent,

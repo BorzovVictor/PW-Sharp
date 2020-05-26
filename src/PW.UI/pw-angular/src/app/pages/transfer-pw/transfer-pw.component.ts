@@ -1,14 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import CustomStore from 'devextreme/data/custom_store';
 import {DxDataGridComponent} from 'devextreme-angular';
-import {TransferDocument, User, UserLookUpModel} from '../../shared/models';
+import {TransferDocument, User} from '../../shared/models';
 import {TransferDocumentsService} from '@services/transfer-documents.service';
-import {UsersService} from '@services/users.service';
+import {UserService} from '@app/user/user.service';
 import {DxHelpersService} from '@app/shared/helpers';
 
 import * as fromDocuments from '@app/store/reducers/trnsfer-doc.reducer';
 import {Store} from '@ngrx/store';
-import {getCurrentUser} from '@app/store/reducers/users.reducer';
 
 @Component({
   selector: 'app-transfer-pw',
@@ -29,7 +28,7 @@ export class TransferPwComponent implements OnInit {
 
   constructor(private service: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
-              private userService: UsersService,
+              private userService: UserService,
               private store: Store<fromDocuments.State>
   ) {
 
@@ -93,26 +92,26 @@ export class TransferPwComponent implements OnInit {
   }
 
   loadUserLookUpStore() {
-    this.userLookUpStore = {
-      store: new CustomStore({
-        key: 'id',
-        load: (loadOptions: any) => {
-          console.log({loadOptions});
-          if (loadOptions.searchValue != null) {
-            console.log({loadOptions});
-            if (loadOptions.searchValue.toString().length > 2) {
-              return this.userService.load(loadOptions);
-            }
-          } else {
-            console.log('userLookUpStore');
-            return this.userService.load(loadOptions);
-          }
-        },
-        byKey: (key: number) => {
-          return this.userService.getById(key).toPromise();
-        }
-      })
-    };
+    // this.userLookUpStore = {
+    //   store: new CustomStore({
+    //     key: 'id',
+    //     load: (loadOptions: any) => {
+    //       console.log({loadOptions});
+    //       if (loadOptions.searchValue != null) {
+    //         console.log({loadOptions});
+    //         if (loadOptions.searchValue.toString().length > 2) {
+    //           return this.userService.load(loadOptions);
+    //         }
+    //       } else {
+    //         console.log('userLookUpStore');
+    //         return this.userService.load(loadOptions);
+    //       }
+    //     },
+    //     byKey: (key: number) => {
+    //       return this.userService.getById(key).toPromise();
+    //     }
+    //   })
+    // };
   }
 
   onInitNewRow(e: any) {
