@@ -6,6 +6,7 @@ import {Store} from '@ngrx/store';
 
 import * as fromDocuments from '@app/store/reducers/trnsfer-doc.reducer';
 import * as documentActions from '@app/store/actions/documents.actions';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +28,7 @@ export class TransferDocumentsService {
       });
   }
 
-  create(model: TransferNewDocumentModel): Promise<TransferDocument> {
-    return this.http.post<TransferDocument>(`${this.prefix}/create`, model).toPromise()
-      .then((doc: TransferDocument) => {
-        this.store.dispatch(new documentActions.DocumentCreate(doc));
-        return doc;
-      });
+  create(model: TransferNewDocumentModel): Observable<TransferDocument> {
+    return this.http.post<TransferDocument>(`${this.prefix}/create`, model);
   }
 }

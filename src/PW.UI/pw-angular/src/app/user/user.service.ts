@@ -1,12 +1,11 @@
-import {Injectable, Output} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {User, UserLookUpModel} from '../shared/models';
 import {HttpHelpersService} from '@app/shared/helpers';
-import {Store} from '@ngrx/store';
-import {UserState} from './state/users.reducer';
-import {GetCurrentUser, Load} from '@app/user/state/users.action';
+
+import {catchError, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,42 +13,38 @@ import {GetCurrentUser, Load} from '@app/user/state/users.action';
 export class UserService {
   prefix = `${environment.apiUrl}/api/users`;
 
-  refreshBalance = false;
-
   constructor(private http: HttpClient,
-              private httpHelpers: HttpHelpersService,
-              private store: Store<UserState>
+              private httpHelpers: HttpHelpersService
   ) {
   }
 
-  getSelfInfo(): Promise<User> {
-    return this.http.get<User>(`${this.prefix}/getSelfInfo`).toPromise()
-      .then((user: User) => {
-        this.store.dispatch(new GetCurrentUser(user));
-        return user;
-      });
+  getCurrentUser(): Observable<User> {
+    return this.http.get<User>(`${this.prefix}/getSelfInfo`)
+      .pipe(
+        tap(data => console.log(JSON.stringify(data))),
+        catchError(this.handleError)
+      );
   }
-
-  // load(loadOptions): Promise<any> {
-  //   const params = this.httpHelpers.getParams(loadOptions);
-  //   return this.http.get<UserLookUpModel[]>(this.prefix, {params}).toPromise()
-  //     .then((users: UserLookUpModel[]) => {
-  //       this.store.dispatch(new Load(users));
-  //       return {data: users, totalCount: users?.length};
-  //     });
-  // }
 
   loadAll(loadOptions?): Observable<UserLookUpModel[]> {
     let params = this.httpHelpers.getParams(loadOptions);
     params = params.set('exceptSelf', 'false');
-    return this.http.get<UserLookUpModel[]>(this.prefix, {params});
+    return this.http.get<UserLookUpModel[]>(this.prefix, {params})
+      .pipe(
+        tap(data => console.log(JSON.stringify(data))),
+        catchError(this.handleError)
+      );
   }
 
-  getById(key: number) {
-    return this.http.get<UserLookUpModel>(`${this.prefix}/${key}`);
-  }
-
-  balanceChanged() {
-    this.refreshBalance = true;
+  private handleError(err) {
+    console.log({err});
+    let errorMessage: string;
+    if (err.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      errorMessage = `An error occurred: ${err.error.message}`;
+    } else {
+      errorMessage = `Backend returned code ${err.status}: ${err.body.error}`;
+    }
+    return throwError(errorMessage);
   }
 }

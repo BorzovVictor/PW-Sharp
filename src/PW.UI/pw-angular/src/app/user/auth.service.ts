@@ -1,7 +1,7 @@
 ﻿﻿import {Injectable} from '@angular/core';
+import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {environment} from '@environments/environment';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {UserWithToken} from '../shared/models';
 import {User} from '@app/shared/models/users/user';
 import {UserRegisterModel} from '@app/shared/models/users/user-register.model';
 import {UserState} from '@app/user/state/users.reducer';
-import {GetCurrentUser} from '@app/user/state/users.action';
+
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -33,12 +33,12 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<UserWithToken> {
     return this.http.post<any>(`${this.prefix}/login`, {email, password})
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(environment.tokenName, JSON.stringify(user));
-        this.store.dispatch(new GetCurrentUser(user));
+        // this.store.dispatch(new GetCurrentUser(user));
         this.currentUserSubject.next(user);
         return user;
       }));

@@ -1,11 +1,14 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DxDataGridComponent} from 'devextreme-angular';
 import CustomStore from 'devextreme/data/custom_store';
 import {Transaction, TransferNewDocumentModel, User, UserLookUpModel} from '@app/shared/models';
 import {DxHelpersService} from '@app/shared/helpers';
-import {TransactionsService, TransferDocumentsService, UserService} from '@app/shared/services';
+import {TransactionService, TransferDocumentsService, UserService} from '@app/shared/services';
 import {select, Store} from '@ngrx/store';
-import * as fromTransaction from '@app/store/reducers/transactions.reducer';
+import {takeWhile} from 'rxjs/operators';
+
+import * as fromTransaction from '@app/pages/transactions/state';
+import * as tranActions from './state/transactions.action';
 import * as fromUsers from '@app/user/state';
 import * as userActions from '@app/user/state/users.action';
 import {Observable} from 'rxjs';
@@ -16,70 +19,82 @@ import {Observable} from 'rxjs';
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss']
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent implements OnInit, OnDestroy {
   @ViewChild('userGrid') dataGrid: DxDataGridComponent;
   dataStore: CustomStore;
-  userStore: {};
-  userLookUpStore: {};
+
   focusedRow: Transaction;
   transferBase = false;
   currentUser: User;
   popupTitle: string;
   toolbarItems: any;
+
+  componentActive = true;
+
   users$: Observable<UserLookUpModel[]>;
   usersErrorMessage$: Observable<string>;
 
+  transactions$: Observable<Transaction[]>;
+  transactions: Transaction[];
+  tranErrorMessage$: Observable<string>;
 
-  constructor(private service: TransactionsService,
+
+  constructor(private service: TransactionService,
               private docService: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
               private userService: UserService,
               private store: Store<fromTransaction.State>) {
-    this.createDataSource();
+    this.getCurrentUser();
     this.createUserStore();
-
-    this.userService.getSelfInfo().then((user: User) => {
-      this.currentUser = user;
-    });
+    this.createDataSource();
   }
 
   ngOnInit() {
+
+  }
+
+  getCurrentUser() {
+    this.store.dispatch(new userActions.GetCurrentUser());
+    this.store.pipe(select(fromUsers.getCurrentUser),
+      takeWhile(() => this.componentActive))
+      .subscribe((user: User) => this.currentUser = user);
   }
 
   createDataSource() {
 
+    this.store.dispatch(new tranActions.Load());
+    this.store.pipe(select(fromTransaction.getTransactions), takeWhile(() => this.componentActive))
+      .subscribe((values: Transaction[]) => this.transactions = values);
+    this.tranErrorMessage$ = this.store.pipe(select(fromTransaction.getError));
 
-    this.dataStore = new CustomStore({
-      key: 'id',
-      load: (loadOptions: any) => {
-        return this.service.loadData(loadOptions);
-      },
-      insert: (values) => {
-        const model = ({} as TransferNewDocumentModel);
-        model.recipient = values.corresponded;
-        model.amount = values.amount;
-        model.description = values.descriptions;
-        const result = this.docService.create(model)
-          .then((data: any) => {
-            this.userService.getSelfInfo();
-            return {
-              data: data.data,
-              totalCount: data.totalCount,
-              summary: data.summary,
-              groupCount: data.groupCount
-            };
-          })
-          .catch(error => {
-            throw error;
-          });
-        return result;
-      }
-    });
+    // this.dataStore = new CustomStore({
+    //   key: 'id',
+    //   load: (loadOptions: any) => {
+    //     this.store.dispatch(new tranActions.Load());
+    //     return this.store.pipe(select(fromTransaction.getTransactions)).toPromise();
+    //   },
+    //   insert: (values) => {
+    //     const model = ({} as TransferNewDocumentModel);
+    //     model.recipient = values.corresponded;
+    //     model.amount = values.amount;
+    //     model.description = values.descriptions;
+    //
+    //     this.store.dispatch(new tranActions.Create(model));
+    //     return this.store.pipe(select(fromTransaction.getTransactions), takeWhile(() => this.componentActive))
+    //       .subscribe((transactions: Transaction[]) => {
+    //         return {
+    //           data: transactions,
+    //           totalCount: transactions.length
+    //         };
+    //       });
+    //   }
+    // });
   }
 
   createUserStore() {
     this.store.dispatch(new userActions.Load());
     this.users$ = this.store.pipe(select(fromUsers.getUsers));
+    this.usersErrorMessage$ = this.store.pipe(select(fromUsers.getError));
   }
 
   onInitNewRow(e: any) {
@@ -164,13 +179,23 @@ export class TransactionsComponent implements OnInit {
 
   onFocusedRowChanged(e: any) {
     this.focusedRow = e.row.data;
+    console.log(e.row.data);
     if (this.currentUser) {
       this.toolbarItems[1].disabled = this.focusedRow.transactionType === 2;
     }
   }
 
   onRowInserted(e: any) {
-    this.userService.balanceChanged();
+    console.log(e);
+    // this.userService.balanceChanged();
+  }
+
+  ngOnDestroy(): void {
+    this.componentActive = false;
+  }
+
+  onRowInserting(e: any) {
+    console.log(e);
   }
 }
 

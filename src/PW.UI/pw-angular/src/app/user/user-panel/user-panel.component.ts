@@ -1,15 +1,15 @@
-import {Component, NgModule, Input, OnInit} from '@angular/core';
+import {Component, Input, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {DxListModule} from 'devextreme-angular/ui/list';
 import {DxContextMenuModule} from 'devextreme-angular/ui/context-menu';
-import {Observable} from 'rxjs';
 import {User} from '@app/shared/models';
 import {UserService} from '@services/index';
 import {select, Store} from '@ngrx/store';
 import * as fromUser from '../state/users.reducer';
-import {getCurrentUser} from '@app/user/state';
-
+import * as fromUsers from '@app/user/state';
+import * as userActions from '@app/user/state/users.action';
+import {takeWhile} from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-panel',
@@ -17,7 +17,7 @@ import {getCurrentUser} from '@app/user/state';
   styleUrls: ['./user-panel.component.scss']
 })
 
-export class UserPanelComponent implements OnInit {
+export class UserPanelComponent implements OnInit, OnDestroy {
   @Input()
   menuItems: any;
 
@@ -25,8 +25,7 @@ export class UserPanelComponent implements OnInit {
   menuMode: string;
 
   currentUser: User;
-
-  userInfo$: Observable<User>;
+  private componentActive = true;
 
   constructor(
     private userService: UserService,
@@ -34,12 +33,18 @@ export class UserPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.userService.getSelfInfo().then((user: User) => {
-    //   this.currentUser = user;
-    // });
-    this.store.select(getCurrentUser).subscribe((user: User) => {
-      this.currentUser = user;
-    });
+    this.getCurrentUser();
+  }
+
+  getCurrentUser() {
+    this.store.dispatch(new userActions.GetCurrentUser());
+    this.store.pipe(select(fromUsers.getCurrentUser),
+      takeWhile(() => this.componentActive))
+      .subscribe((user: User) => this.currentUser = user);
+  }
+
+  ngOnDestroy(): void {
+    this.componentActive = false;
   }
 }
 

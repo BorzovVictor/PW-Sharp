@@ -20,3 +20,18 @@ export const selectUser = createSelector(
   getUsers,
   users => (key: number) => users[key]
 );
+
+export const getError = createSelector(
+  getUserFeatureState,
+  state => state.error
+);
+
+export const logIn = createSelector(
+  getUserFeatureState,
+  state => state.currentUser
+);
+
+export const logInError = createSelector(
+  getUserFeatureState,
+  state => state.error
+);

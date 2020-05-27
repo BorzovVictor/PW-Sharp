@@ -1,20 +1,24 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import CustomStore from 'devextreme/data/custom_store';
 import {DxDataGridComponent} from 'devextreme-angular';
-import {TransferDocument, User} from '../../shared/models';
+import {TransferDocument, User, UserLookUpModel} from '../../shared/models';
 import {TransferDocumentsService} from '@services/transfer-documents.service';
 import {UserService} from '@app/user/user.service';
 import {DxHelpersService} from '@app/shared/helpers';
 
 import * as fromDocuments from '@app/store/reducers/trnsfer-doc.reducer';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
+import * as userActions from '@app/user/state/users.action';
+import * as fromUsers from '@app/user/state';
+import {takeWhile} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-transfer-pw',
   templateUrl: './transfer-pw.component.html',
   styleUrls: ['./transfer-pw.component.css']
 })
-export class TransferPwComponent implements OnInit {
+export class TransferPwComponent implements OnInit, OnDestroy {
   @ViewChild('userGrid') dataGrid: DxDataGridComponent;
   dataStore: CustomStore;
   userStore: {};
@@ -25,6 +29,9 @@ export class TransferPwComponent implements OnInit {
   popupTitle: string;
 
   toolbarItems: any;
+  private componentActive = true;
+  private users$: Observable<UserLookUpModel[]>;
+  private usersErrorMessage$: Observable<string>;
 
   constructor(private service: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
@@ -37,12 +44,16 @@ export class TransferPwComponent implements OnInit {
     this.createDataSource();
 
     this.toolbarItems = [];
-    this.userService.getSelfInfo().then((user: User) => {
-      this.currentUser = user;
-    });
+    // this.userService.getSelfInfo().then((user: User) => {
+    //   this.currentUser = user;
+    // });
   }
 
   ngOnInit() {
+    this.store.dispatch(new userActions.GetCurrentUser());
+    this.store.pipe(select(fromUsers.getCurrentUser),
+      takeWhile(() => this.componentActive))
+      .subscribe((user: User) => this.currentUser = user);
   }
 
   createDataSource() {
@@ -52,9 +63,10 @@ export class TransferPwComponent implements OnInit {
         return this.service.load();
       },
       insert: (values) => {
-        const result = this.service.create(values)
+        const result = this.service.create(values).toPromise()
           .then((data: any) => {
-            this.userService.getSelfInfo();
+            // this.userService.getSelfInfo();
+            this.store.dispatch(new userActions.GetCurrentUser());
             return {
               data: data.data,
               totalCount: data.totalCount,
@@ -71,25 +83,31 @@ export class TransferPwComponent implements OnInit {
   }
 
   createUserStore() {
-    this.userStore = {
-      store: new CustomStore({
-        key: 'id',
-        load: (loadOptions: any) => {
-          if (loadOptions.searchValue != null) {
-            if (loadOptions.searchValue.toString().length > 2) {
-              console.log('userStore.load');
-              return this.userService.loadAll(loadOptions).toPromise();
-            }
-          } else {
-            return this.userService.loadAll(loadOptions).toPromise();
-          }
-        },
-        byKey: (key: number) => {
-          return this.userService.getById(key).toPromise();
-        }
-      })
-    };
+    this.store.dispatch(new userActions.Load());
+    this.users$ = this.store.pipe(select(fromUsers.getUsers));
+    this.usersErrorMessage$ = this.store.pipe(select(fromUsers.getError));
   }
+
+  // createUserStore() {
+  //   this.userStore = {
+  //     store: new CustomStore({
+  //       key: 'id',
+  //       load: (loadOptions: any) => {
+  //         if (loadOptions.searchValue != null) {
+  //           if (loadOptions.searchValue.toString().length > 2) {
+  //             console.log('userStore.load');
+  //             return this.userService.loadAll(loadOptions).toPromise();
+  //           }
+  //         } else {
+  //           return this.userService.loadAll(loadOptions).toPromise();
+  //         }
+  //       },
+  //       byKey: (key: number) => {
+  //         return this.userService.getById(key).toPromise();
+  //       }
+  //     })
+  //   };
+  // }
 
   loadUserLookUpStore() {
     // this.userLookUpStore = {
@@ -204,6 +222,10 @@ export class TransferPwComponent implements OnInit {
   }
 
   onRowInserted(e: any) {
-    this.userService.balanceChanged();
+    // this.userService.balanceChanged();
+  }
+
+  ngOnDestroy(): void {
+    this.componentActive = false;
   }
 }

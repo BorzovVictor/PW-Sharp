@@ -1,5 +1,4 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '@app/shared/shared.module';
 import {StoreModule} from '@ngrx/store';
 import {usersReducer} from '@app/user/state/users.reducer';

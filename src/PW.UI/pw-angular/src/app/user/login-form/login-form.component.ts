@@ -1,4 +1,4 @@
-import {Component, NgModule, OnInit} from '@angular/core';
+import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 
@@ -9,20 +9,22 @@ import {DxValidatorModule} from 'devextreme-angular/ui/validator';
 import {DxValidationGroupModule} from 'devextreme-angular/ui/validation-group';
 import {environment} from '@environments/environment';
 import {AppInfoService, AppNotifyService, AuthService} from '@services/index';
-import {Store} from '@ngrx/store';
-import {UserWithToken} from '@app/shared/models';
+import {select, Store} from '@ngrx/store';
+
 import {UserState} from '@app/user/state/users.reducer';
-import {GetCurrentUser} from '@app/user/state/users.action';
+import * as userActions from '@app/user/state/users.action';
+import * as fromUsers from '@app/user/state';
 
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss']
 })
-export class LoginFormComponent implements OnInit {
+export class LoginFormComponent implements OnInit, OnDestroy {
   login = 'admin@pw.com';
   password = '';
   returnUrl: string;
+  private componentActive = true;
 
   constructor(
     private router: Router,
@@ -32,6 +34,18 @@ export class LoginFormComponent implements OnInit {
     private notify: AppNotifyService,
     private store: Store<UserState>
   ) {
+
+    // this.store.dispatch(new userActions.GetCurrentUser());
+    // this.store.pipe(select(fromUsers.getCurrentUser))
+    //   .subscribe((user: User) => {
+    //     console.log({user});
+    //     if (user) {
+    //       this.router.navigate(['/']);
+    //     }
+    //   });
+
+    // todo to try redirect on router
+
     // redirect to home if already logged in
     if (this.authService.currentUserValue) {
       this.router.navigate(['/']);
@@ -56,9 +70,11 @@ export class LoginFormComponent implements OnInit {
       return;
     }
 
-    this.authService.login(this.login, this.password).subscribe((user: UserWithToken) => {
-        this.store.dispatch(new GetCurrentUser(user));
-        this.notify.info(`Welcome ${user.userName}`, '', true);
+    this.store.dispatch(new userActions.LogIn({login: this.login, password: this.password}));
+    this.store.pipe(select(fromUsers.logIn)).subscribe(
+      (user) => {
+        console.log(user);
+        // this.notify.info(`Welcome ${user.userName}`, '', true);
       },
       error => {
         this.notify.error(error, 'Error', true);
@@ -66,12 +82,28 @@ export class LoginFormComponent implements OnInit {
       () => {
         this.router.navigate(['']);
         args.validationGroup.reset();
-      });
+      }
+    );
+
+    // this.authService.login(this.login, this.password).subscribe((user: UserWithToken) => {
+    //     this.notify.info(`Welcome ${user.userName}`, '', true);
+    //   },
+    //   error => {
+    //     this.notify.error(error, 'Error', true);
+    //   },
+    //   () => {
+    //     this.router.navigate(['']);
+    //     args.validationGroup.reset();
+    //   });
   }
 
   createAccount(e: any) {
     console.log({e});
     this.router.navigate(['/register-form']);
+  }
+
+  ngOnDestroy(): void {
+    this.componentActive = false;
   }
 }
 

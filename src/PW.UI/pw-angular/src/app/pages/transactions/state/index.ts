@@ -1,20 +1,18 @@
+import * as fromRoot from '@app/store/state/app.state';
 import {Transaction} from '@app/shared/models';
-import * as fromRoot from '../state/app.state';
-import {TRANSACTION_ACTION} from '@app/store/actions/transactions.action';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 
+// state
 export interface State extends fromRoot.State {
   transactions: TransactionState;
 }
 
 export interface TransactionState {
   transactions: Transaction[];
+  error: string;
 }
 
-const initialState: TransactionState = {
-  transactions: []
-};
-
+// selectors
 const getTransactionsFeatureState = createFeatureSelector<TransactionState>('transactions');
 
 export const getTransactions = createSelector(
@@ -22,14 +20,7 @@ export const getTransactions = createSelector(
   state => state.transactions
 );
 
-export function transactionsReducer(state = initialState, action): TransactionState {
-  switch (action.type) {
-    case TRANSACTION_ACTION.TRANSACTION_LOAD:
-      return {
-        ...state,
-        transactions: action.payload
-      };
-    default:
-      return state;
-  }
-}
+export const getError = createSelector(
+  getTransactionsFeatureState,
+  state => state.error
+);

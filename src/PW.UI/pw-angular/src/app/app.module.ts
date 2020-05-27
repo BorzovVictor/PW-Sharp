@@ -19,10 +19,12 @@ import {StoreModule} from '@ngrx/store';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 
 import {usersReducer} from '@app/user/state/users.reducer';
-import {transactionsReducer} from '@app/store/reducers/transactions.reducer';
+import {transactionsReducer} from '@app/pages/transactions/state/transactions.reducer';
 import {transferDocReducer} from '@app/store/reducers/trnsfer-doc.reducer';
 import {UserModule} from '@app/user/user.module';
 import {EffectsModule} from '@ngrx/effects';
+import {TransactionModule} from '@app/pages/transactions/transaction.module';
+import {CreateDocModule} from '@app/shared/components/create-doc/create-doc.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenName);
@@ -40,8 +42,10 @@ export function tokenGetter() {
     SideNavInnerToolbarModule,
     SingleCardModule,
     FooterModule,
+    CreateDocModule,
     AppRoutingModule,
     UserModule,
+    TransactionModule,
     ToastrModule.forRoot({
       progressBar: true,
       preventDuplicates: true,
@@ -69,7 +73,7 @@ export function tokenGetter() {
       multi: true,
       useClass: TokenInterceptor
     },
-    {provide: ErrorHandler, useClass: AppErrorHandler}
+     {provide: ErrorHandler, useClass: AppErrorHandler}
   ],
   bootstrap: [AppComponent]
 })

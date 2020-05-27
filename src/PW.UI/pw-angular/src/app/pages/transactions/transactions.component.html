@@ -1,8 +1,9 @@
 <h2 class="content-block">Transactions list</h2>
-<div class="dx-card content-block responsive-paddings" *ngIf="users$ | async as users">
+<div class="dx-card content-block responsive-paddings" *ngIf="transactions">
   <dx-data-grid #userGrid
                 id="transferGrid"
-                [dataSource]="dataStore"
+                [dataSource]="transactions"
+                keyExpr="id"
                 [showBorders]="true"
                 [showColumnLines]="true"
                 [allowColumnResizing]="true"
@@ -13,6 +14,7 @@
                 (onToolbarPreparing)="onToolbarPreparing($event)"
                 (onFocusedRowChanged)="onFocusedRowChanged($event)"
                 (onRowInserted)="onRowInserted($event)"
+                (onRowInserting)="onRowInserting($event)"
   >
     <dxo-load-panel [enabled]="true"></dxo-load-panel>
     <dxo-column-chooser mode="select"></dxo-column-chooser>
@@ -21,7 +23,7 @@
     <dxo-editing
       mode="popup"
       refreshMode="full"
-      [allowAdding]="false"
+      [allowAdding]="true"
       [allowUpdating]="false"
       [allowDeleting]="false"
     >
@@ -46,8 +48,9 @@
       </dxo-form>
     </dxo-editing>
 
-    <dxi-column dataField="corresponded" caption="Recipient" [visible]="false" [showInColumnChooser]="false">
-      <dxo-lookup [dataSource]="users" valueExpr="id" displayExpr="userName"></dxo-lookup>
+    <dxi-column dataField="corresponded" caption="Recipient" [visible]="false"
+                [showInColumnChooser]="false">
+      <dxo-lookup [dataSource]="users$ | async" valueExpr="id" displayExpr="userName"></dxo-lookup>
     </dxi-column>
     <dxi-column dataField="dateTransfer" caption="Date" dataType="datetime" sortOrder="desc"></dxi-column>
     <dxi-column dataField="correspondedName" caption="User"></dxi-column>
@@ -55,4 +58,14 @@
     <dxi-column dataField="balance" caption="Balance"></dxi-column>
     <dxi-column dataField="descriptions" caption="Description" [allowFiltering]="false"></dxi-column>
   </dx-data-grid>
+</div>
+
+<div *ngIf="usersErrorMessage$ | async as userErrorMessage"
+     class="dx-card content-block responsive-paddings dx-error-message">
+  Error: {{ userErrorMessage }}
+</div>
+
+<div *ngIf="tranErrorMessage$ | async as userErrorMessage"
+     class="dx-card content-block responsive-paddings dx-error-message">
+  Error: {{ userErrorMessage }}
 </div>
