@@ -21,7 +21,7 @@ export class UserService {
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${this.prefix}/getSelfInfo`)
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        // tap(data => console.log(JSON.stringify(data))),
         catchError(this.handleError)
       );
   }
@@ -31,13 +31,12 @@ export class UserService {
     params = params.set('exceptSelf', 'false');
     return this.http.get<UserLookUpModel[]>(this.prefix, {params})
       .pipe(
-        tap(data => console.log(JSON.stringify(data))),
+        // tap(data => console.log(JSON.stringify(data))),
         catchError(this.handleError)
       );
   }
 
   private handleError(err) {
-    console.log({err});
     let errorMessage: string;
     if (err.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.

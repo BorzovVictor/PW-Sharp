@@ -3,11 +3,12 @@ import {Routes, RouterModule} from '@angular/router';
 import {LoginFormComponent, RegisterFormComponent} from './shared/components';
 
 import {HomeComponent} from './pages/home/home.component';
-import {DxDataGridModule, DxFormModule} from 'devextreme-angular';
+import {DxButtonModule, DxDataGridModule, DxFormModule, DxPopupModule} from 'devextreme-angular';
 import {TransactionsComponent} from './pages/transactions/transactions.component';
 import {TransferPwComponent} from '@app/pages/transfer-pw/transfer-pw.component';
 import {AuthGuard} from '@app/shared/services';
 import {SharedModule} from '@app/shared/shared.module';
+import {CreateDocModule} from '@app/shared/components/create-doc/create-doc.component';
 
 const routes: Routes = [
   {
@@ -42,7 +43,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), DxDataGridModule, DxFormModule, SharedModule],
+  imports: [RouterModule.forRoot(routes), DxDataGridModule, DxFormModule, SharedModule, DxPopupModule, CreateDocModule, DxButtonModule],
   exports: [RouterModule],
   declarations: [
     HomeComponent,

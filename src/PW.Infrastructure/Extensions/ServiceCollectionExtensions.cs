@@ -43,6 +43,7 @@ namespace PW.Infrastructure
             services.AddTransient<IGetUserInfoByIdCase, GetUserInfoById>();
             services.AddTransient<ILoadUsersCase, LoadUsers>();
             services.AddTransient<IGetUserByIdCase, GetUserById>();
+            services.AddTransient<IGetTransactionByDocIdCase, GetTransactionByDocId>();
 
             return services;
         }

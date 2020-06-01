@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {HttpHelpersService} from '@app/shared/helpers/http-helpers.service';
-import {Transaction} from '@app/shared/models';
+import {Transaction, TransferDocument, TransferNewDocumentModel} from '@app/shared/models';
 import {Store} from '@ngrx/store';
 import * as fromTransaction from '@app/pages/transactions/state';
 import {Load} from '@app/pages/transactions/state/transactions.action';
@@ -24,5 +24,9 @@ export class TransactionService {
   loadData(filter): Observable<Transaction[]> {
     const params = this.httpHelper.getParams(filter);
     return this.http.get<Transaction[]>(this.prefix, {params});
+  }
+
+  create(model: TransferNewDocumentModel): Observable<Transaction> {
+    return this.http.post<Transaction>(`${this.prefix}/create`, model);
   }
 }

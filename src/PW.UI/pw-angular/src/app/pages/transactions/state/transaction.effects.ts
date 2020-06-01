@@ -10,8 +10,7 @@ import {Transaction, TransferNewDocumentModel} from '@app/shared/models';
 @Injectable()
 export class TransactionEffects {
   constructor(private actions$: Actions,
-              private service: TransactionService,
-              private docService: TransferDocumentsService) {
+              private service: TransactionService) {
   }
 
   @Effect()
@@ -27,7 +26,7 @@ export class TransactionEffects {
   createTransaction$ = this.actions$.pipe(
     ofType(tranActions.TransactionActionsType.Create),
     map((action: tranActions.Create) => action.payload),
-    mergeMap((doc: TransferNewDocumentModel) => this.docService.create(doc).pipe(
+    mergeMap((doc: TransferNewDocumentModel) => this.service.create(doc).pipe(
       map(newDoc => (new tranActions.CreateSuccess(newDoc))),
       catchError(err => of(new tranActions.CreateFail(err)))
       )

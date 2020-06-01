@@ -2,7 +2,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {UserState} from '@app/user/state/users.reducer';
 
-
 // selector functions
 const getUserFeatureState = createFeatureSelector<UserState>('users');
 

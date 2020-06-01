@@ -23,7 +23,7 @@
     <dxo-editing
       mode="popup"
       refreshMode="full"
-      [allowAdding]="true"
+      [allowAdding]="false"
       [allowUpdating]="false"
       [allowDeleting]="false"
     >
@@ -62,10 +62,25 @@
 
 <div *ngIf="usersErrorMessage$ | async as userErrorMessage"
      class="dx-card content-block responsive-paddings dx-error-message">
-  Error: {{ userErrorMessage }}
+  Users Error: {{ userErrorMessage }}
 </div>
 
 <div *ngIf="tranErrorMessage$ | async as userErrorMessage"
      class="dx-card content-block responsive-paddings dx-error-message">
-  Error: {{ userErrorMessage }}
+  Transactions Error: {{ userErrorMessage }}
 </div>
+
+<dx-popup
+  [width]="600"
+  [height]="550"
+  [showTitle]="true"
+  [title]="editTitle"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [(visible)]="popupVisible">
+  <div *dxTemplate="let data of 'content'">
+<!--    <div>{{data}}</div>-->
+    <app-create-doc [editRecord]="editTransaction"></app-create-doc>
+<!--    <dx-button text="Test" ></dx-button>-->
+  </div>
+</dx-popup>

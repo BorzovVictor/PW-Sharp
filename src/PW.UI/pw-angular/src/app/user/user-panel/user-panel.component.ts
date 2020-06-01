@@ -33,10 +33,6 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getCurrentUser();
-  }
-
-  getCurrentUser() {
     this.store.dispatch(new userActions.GetCurrentUser());
     this.store.pipe(select(fromUsers.getCurrentUser),
       takeWhile(() => this.componentActive))

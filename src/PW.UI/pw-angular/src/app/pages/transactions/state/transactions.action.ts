@@ -41,7 +41,7 @@ export class Create implements Action {
 export class CreateSuccess implements Action {
   readonly type = TransactionActionsType.CreateSuccess;
 
-  constructor(public payload: TransferDocument) {
+  constructor(public payload: Transaction) {
   }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,31 @@ namespace PW.Api.Controllers
             try
             {
                 var result = await service.Execute(id);
+                return result.Succeded
+                    ? (IActionResult) Ok(result.Success)
+                    : BadRequest(result.Failure);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.GetBaseException().Message);
+            }
+        }
+        
+        [HttpPost("create")]
+        [ValidateModel]
+        public async Task<IActionResult> Post(
+            [FromServices] ICreateNewDocumentCase service,
+            [FromServices] IGetTransactionByDocIdCase trService,
+            [FromBody] TransferDocumentRequest request
+        )
+        {
+            try
+            {
+                request.Sender = Convert.ToInt32(User.Claims.First(c => c.Type == "Id").Value);
+                var doc = await service.Execute(request);
+                if (doc.Failed)
+                    return BadRequest(doc.Failure);
+                var result = await trService.Execute(doc.Success.Id);
                 return result.Succeded
                     ? (IActionResult) Ok(result.Success)
                     : BadRequest(result.Failure);

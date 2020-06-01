@@ -1,5 +1,6 @@
 import {TransactionActionsType} from '@app/pages/transactions/state/transactions.action';
 import {TransactionState} from '@app/pages/transactions/state/index';
+import {Transaction} from '@app/shared/models';
 
 const initialState: TransactionState = {
   transactions: [],

@@ -24,6 +24,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   dataStore: CustomStore;
 
   focusedRow: Transaction;
+  editTransaction: Transaction;
+  editTitle = '';
   transferBase = false;
   currentUser: User;
   popupTitle: string;
@@ -37,64 +39,42 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   transactions$: Observable<Transaction[]>;
   transactions: Transaction[];
   tranErrorMessage$: Observable<string>;
+  popupVisible = false;
 
+  buttonOptions: any = {
+    text: 'Confirm',
+    type: 'success',
+    useSubmitBehavior: true
+  };
 
   constructor(private service: TransactionService,
               private docService: TransferDocumentsService,
               private dxHelpers: DxHelpersService,
               private userService: UserService,
               private store: Store<fromTransaction.State>) {
-    this.getCurrentUser();
-    this.createUserStore();
-    this.createDataSource();
   }
 
   ngOnInit() {
-
-  }
-
-  getCurrentUser() {
+    // getCurrentUser
     this.store.dispatch(new userActions.GetCurrentUser());
     this.store.pipe(select(fromUsers.getCurrentUser),
       takeWhile(() => this.componentActive))
       .subscribe((user: User) => this.currentUser = user);
-  }
 
-  createDataSource() {
-
-    this.store.dispatch(new tranActions.Load());
-    this.store.pipe(select(fromTransaction.getTransactions), takeWhile(() => this.componentActive))
-      .subscribe((values: Transaction[]) => this.transactions = values);
-    this.tranErrorMessage$ = this.store.pipe(select(fromTransaction.getError));
-
-    // this.dataStore = new CustomStore({
-    //   key: 'id',
-    //   load: (loadOptions: any) => {
-    //     this.store.dispatch(new tranActions.Load());
-    //     return this.store.pipe(select(fromTransaction.getTransactions)).toPromise();
-    //   },
-    //   insert: (values) => {
-    //     const model = ({} as TransferNewDocumentModel);
-    //     model.recipient = values.corresponded;
-    //     model.amount = values.amount;
-    //     model.description = values.descriptions;
-    //
-    //     this.store.dispatch(new tranActions.Create(model));
-    //     return this.store.pipe(select(fromTransaction.getTransactions), takeWhile(() => this.componentActive))
-    //       .subscribe((transactions: Transaction[]) => {
-    //         return {
-    //           data: transactions,
-    //           totalCount: transactions.length
-    //         };
-    //       });
-    //   }
-    // });
-  }
-
-  createUserStore() {
+    // create user store
     this.store.dispatch(new userActions.Load());
     this.users$ = this.store.pipe(select(fromUsers.getUsers));
     this.usersErrorMessage$ = this.store.pipe(select(fromUsers.getError));
+
+    // create data store
+    this.store.dispatch(new tranActions.Load());
+    this.store.pipe(select(fromTransaction.getTransactions), takeWhile(() => this.componentActive))
+      .subscribe((values: Transaction[]) => {
+        this.transactions = values;
+        this.store.dispatch(new userActions.GetCurrentUser());
+      });
+    this.tranErrorMessage$ = this.store.pipe(select(fromTransaction.getError));
+
   }
 
   onInitNewRow(e: any) {
@@ -179,7 +159,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   onFocusedRowChanged(e: any) {
     this.focusedRow = e.row.data;
-    console.log(e.row.data);
     if (this.currentUser) {
       this.toolbarItems[1].disabled = this.focusedRow.transactionType === 2;
     }
@@ -195,7 +174,16 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   onRowInserting(e: any) {
-    console.log(e);
+    const model = ({
+      recipient: e.data.corresponded,
+      amount: e.data.amount,
+      description: e.data.descriptions
+    } as TransferNewDocumentModel);
+
+    this.store.dispatch(new tranActions.Create(model));
+
+    e.cancel = true;
+    e.component.cancelEditData();
   }
 }
 

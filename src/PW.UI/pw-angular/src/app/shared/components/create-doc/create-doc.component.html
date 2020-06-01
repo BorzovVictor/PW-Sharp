@@ -1,1 +1,36 @@
-<p>create-doc works!</p>
+<form action="your-action" (submit)="onFormSubmit($event)">
+  <dx-form id="form" *ngIf="users$ | async as users"
+           [formData]="model"
+           [readOnly]="false"
+           [showColonAfterLabel]="true"
+           [showValidationSummary]="true"
+           validationGroup="customerData">
+    <dxi-item itemType="group" caption="Credentials">
+
+<!--      recipient-->
+      <dxi-item [label]="{text: 'Recipient'}"
+                dataField="recipient"
+                editorType="dxSelectBox"
+                caption="Recipient"
+                [editorOptions]="{
+                      dataSource: users,
+                      displayExpr: 'userName',
+                      valueExpr: 'id'
+                    }">
+        <dxi-validation-rule type="required" message="recipient is required"></dxi-validation-rule>
+      </dxi-item>
+<!--      amount-->
+      <dxi-item dataField="amount" caption="Sum" itemType="number">
+        <dxi-validation-rule type="required"></dxi-validation-rule>
+      </dxi-item>
+<!--      description-->
+      <dxi-item dataField="description" caption="Description"></dxi-item>
+
+    </dxi-item>
+<!--    <dxi-item-->
+<!--      itemType="button"-->
+<!--      horizontalAlignment="right"-->
+<!--      [buttonOptions]="buttonOptions">-->
+<!--    </dxi-item>-->
+  </dx-form>
+</form>
