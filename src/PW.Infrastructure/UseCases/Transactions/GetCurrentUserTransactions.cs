@@ -53,9 +53,12 @@ namespace PW.Infrastructure
                         BaseDocumentId = document.Id
                     };
 
+                if (request.Skip.HasValue && request.Skip > 0)
+                    query = query.Skip(request.Skip.Value);
+                if (request.Take.HasValue && request.Take > 0)
+                    query = query.Take(request.Take.Value);
+
                 var result = await query
-                    .Skip(request.Skip.Value)
-                    .Take(request.Take.Value)
                     .ToListAsync();
                 
                 return Success(result);
