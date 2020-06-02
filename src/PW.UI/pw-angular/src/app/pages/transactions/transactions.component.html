@@ -69,18 +69,3 @@
      class="dx-card content-block responsive-paddings dx-error-message">
   Transactions Error: {{ userErrorMessage }}
 </div>
-
-<dx-popup
-  [width]="600"
-  [height]="550"
-  [showTitle]="true"
-  [title]="editTitle"
-  [dragEnabled]="true"
-  [closeOnOutsideClick]="false"
-  [(visible)]="popupVisible">
-  <div *dxTemplate="let data of 'content'">
-<!--    <div>{{data}}</div>-->
-    <app-create-doc [editRecord]="editTransaction"></app-create-doc>
-<!--    <dx-button text="Test" ></dx-button>-->
-  </div>
-</dx-popup>

@@ -21,11 +21,9 @@ import {Observable} from 'rxjs';
 })
 export class TransactionsComponent implements OnInit, OnDestroy {
   @ViewChild('userGrid') dataGrid: DxDataGridComponent;
-  dataStore: CustomStore;
 
   focusedRow: Transaction;
-  editTransaction: Transaction;
-  editTitle = '';
+
   transferBase = false;
   currentUser: User;
   popupTitle: string;
@@ -36,16 +34,9 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   users$: Observable<UserLookUpModel[]>;
   usersErrorMessage$: Observable<string>;
 
-  transactions$: Observable<Transaction[]>;
   transactions: Transaction[];
   tranErrorMessage$: Observable<string>;
-  popupVisible = false;
 
-  buttonOptions: any = {
-    text: 'Confirm',
-    type: 'success',
-    useSubmitBehavior: true
-  };
 
   constructor(private service: TransactionService,
               private docService: TransferDocumentsService,

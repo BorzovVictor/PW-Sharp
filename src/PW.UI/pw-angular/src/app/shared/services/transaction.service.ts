@@ -16,8 +16,7 @@ export class TransactionService {
   prefix = `${environment.apiUrl}/api/documents/transactions`;
 
   constructor(private http: HttpClient,
-              private httpHelper: HttpHelpersService,
-              private store: Store<fromTransaction.State>) {
+              private httpHelper: HttpHelpersService) {
 
   }
 

@@ -1,8 +1,9 @@
 <h2 class="content-block">Transactions history</h2>
-<div class="dx-card content-block responsive-paddings">
+<div class="dx-card content-block responsive-paddings" *ngIf="documents">
   <dx-data-grid #userGrid
                 id="transferGrid"
-                [dataSource]="dataStore"
+                keyExpr="id"
+                [dataSource]="documents"
                 [showBorders]="true"
                 [showColumnLines]="true"
                 [allowColumnResizing]="true"
@@ -13,6 +14,7 @@
                 (onToolbarPreparing)="onToolbarPreparing($event)"
                 (onFocusedRowChanged)="onFocusedRowChanged($event)"
                 (onRowInserted)="onRowInserted($event)"
+                (onRowInserting)="onRowInserting($event)"
   >
     <dxo-load-panel [enabled]="true"></dxo-load-panel>
     <dxo-column-chooser mode="select"></dxo-column-chooser>
@@ -35,7 +37,7 @@
       <dxo-form [colCount]="1" [labelLocation]="'left'">
 
         <dxi-item dataField="recipient" caption="Recipient">
-          <dxo-lookup [dataSource]="userLookUpStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+          <dxo-lookup [dataSource]="users$ | async" valueExpr="id" displayExpr="userName"></dxo-lookup>
           <dxi-validation-rule type="required"></dxi-validation-rule>
         </dxi-item>
 
@@ -48,12 +50,22 @@
 
     <dxi-column dataField="dateTransfer" caption="Date" dataType="date"></dxi-column>
     <dxi-column dataField="sender" caption="Sender">
-      <dxo-lookup [dataSource]="userStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+      <dxo-lookup [dataSource]="users$ | async" valueExpr="id" displayExpr="userName"></dxo-lookup>
     </dxi-column>
     <dxi-column dataField="recipient" caption="Recipient">
-      <dxo-lookup [dataSource]="userStore" valueExpr="id" displayExpr="userName"></dxo-lookup>
+      <dxo-lookup [dataSource]="users$ | async" valueExpr="id" displayExpr="userName"></dxo-lookup>
     </dxi-column>
     <dxi-column dataField="amount" caption="Sum"></dxi-column>
     <dxi-column dataField="description" caption="Description" [visible]="false"></dxi-column>
   </dx-data-grid>
+</div>
+
+<div *ngIf="usersErrorMessage$ | async as userErrorMessage"
+     class="dx-card content-block responsive-paddings dx-error-message">
+  Users Error: {{ userErrorMessage }}
+</div>
+
+<div *ngIf="docErrorMessage$ | async as userErrorMessage"
+     class="dx-card content-block responsive-paddings dx-error-message">
+  Documents Error: {{ userErrorMessage }}
 </div>

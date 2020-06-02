@@ -3,7 +3,7 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
 import {catchError, map, mergeMap} from 'rxjs/operators';
 
-import {TransactionService, TransferDocumentsService} from '@app/shared/services';
+import {TransactionService} from '@app/shared/services';
 import * as tranActions from '../state/transactions.action';
 import {Transaction, TransferNewDocumentModel} from '@app/shared/models';
 

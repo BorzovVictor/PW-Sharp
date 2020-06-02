@@ -20,11 +20,12 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 
 import {usersReducer} from '@app/user/state/users.reducer';
 import {transactionsReducer} from '@app/pages/transactions/state/transactions.reducer';
-import {transferDocReducer} from '@app/store/reducers/trnsfer-doc.reducer';
+import {transferDocReducer} from '@app/pages/transfer-pw/state/trnsfer-doc.reducer';
 import {UserModule} from '@app/user/user.module';
 import {EffectsModule} from '@ngrx/effects';
 import {TransactionModule} from '@app/pages/transactions/transaction.module';
 import {CreateDocModule} from '@app/shared/components/create-doc/create-doc.component';
+import {DocumentModule} from '@app/pages/transfer-pw/document.module';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.tokenName);
@@ -46,6 +47,7 @@ export function tokenGetter() {
     AppRoutingModule,
     UserModule,
     TransactionModule,
+    DocumentModule,
     ToastrModule.forRoot({
       progressBar: true,
       preventDuplicates: true,
@@ -57,8 +59,6 @@ export function tokenGetter() {
     }),
     StoreModule.forRoot({}),
     EffectsModule.forRoot([]),
-    StoreModule.forFeature('transactions', transactionsReducer),
-    StoreModule.forFeature('transferDocuments', transferDocReducer),
     StoreDevtoolsModule.instrument({
       name: 'PW',
       maxAge: 25,
