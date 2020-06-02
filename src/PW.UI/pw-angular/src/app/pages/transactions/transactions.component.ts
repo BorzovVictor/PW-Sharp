@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DxDataGridComponent} from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
 import {Transaction, TransferNewDocumentModel, User, UserLookUpModel} from '@app/shared/models';
 import {DxHelpersService} from '@app/shared/helpers';
 import {TransactionService, TransferDocumentsService, UserService} from '@app/shared/services';

@@ -2,10 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '@environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {HttpHelpersService} from '@app/shared/helpers/http-helpers.service';
-import {Transaction, TransferDocument, TransferNewDocumentModel} from '@app/shared/models';
-import {Store} from '@ngrx/store';
-import * as fromTransaction from '@app/pages/transactions/state';
-import {Load} from '@app/pages/transactions/state/transactions.action';
+import {Transaction, TransferNewDocumentModel} from '@app/shared/models';
 import {Observable} from 'rxjs';
 
 
